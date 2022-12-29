@@ -1,0 +1,355 @@
+{
+  "posts": [
+    {
+      "content": "1、kube-system/kube-state-metrics指标数据太多，未分片导致拉取不到指标，通过分片、增加kube-system/kube-state-metrics副本数解决。",
+      "data": {
+        "title": "prometheus相关case记录",
+        "date": "2022-11-25 17:02:05",
+        "tags": [],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "prometheus-xiang-guan-case-ji-lu"
+    },
+    {
+      "content": "这些年内网穿透/异地组网的方案比较多\n \n1. headscale(tailscale服务端开源版，基于wireguard ) 。教程近期多起来了，趋势热度比zerotier的越来越高，B站有教程，可以试试。（没用过，但最推荐）\n相关链接：\nhttps://icloudnative.io/posts/how-to-set-up-or-migrate-headscale/\n \nhttps://github.com/gurucomputing/headscale-ui\n \nhttps://b23.tv/LVBGssI\n \n2. zerotier自建planet，（前面说没速度的怀疑用的是官方服务器打洞不成功流量被中转了）。\n \n自建比较折腾，服务端需要修改源码，编译，每个客户端复制planet文件，和服务端部署前端UI部分。我目前采用这种方式，因为一直用zerotier，不想换其他工具。\n \n优势：控制权限和路由配置简单，在UI层配置即可。\n \nhttps://bit.ly/3SyIDF0\n \nhttps://www.v2ex.com/t/869846\n \n3. n2n，版本太多有点捋不清，跨版本打洞听说有问题，用好我觉得n2n才是最简单的，supernode和edge启动起来就几个参数\n \nhttps://bit.ly/3RbhIy4\n \n4. nebula 站长曾推荐过的\nhttps://github.com/slackhq/nebula\n \nhttps://www.v2ex.com/t/621442\n \n配置需要深入阅读才知道怎么配置路由\n \n5. 穿透/端口映射转发\n \nfrp/zoro/cloudflare tunnel\n \nhttps://github.com/fatedier/frp\n \nhttps://github.com/txthinking/zoro/blob/master/README_ZH.md\n \nhttps://lxnchan.cn/cf-tunnel.html\n \nhttps://developers.cloudflare.com/cloudflare-one/connections/connect-apps/",
+      "data": {
+        "title": "各种异地组网方案",
+        "date": "2022-09-26 10:34:44",
+        "tags": [],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "ge-chong-yi-di-zu-wang-fang-an"
+    },
+    {
+      "content": "docker ps 查看正在运行的docker容器，相当于操作系统查看进程命令；\ndocker ps -a 查看所有运行过的容器，包括已经停止运行的容器；\ndocker stop <container id> 停止某个正在运行的容器\ndocker start  <container id> 启动某个已经停止的容器\ndocker images 获取本地所有的容器镜像\ndocker run <image id> 运行某个镜像\ndocker logs -f <container id> 查看容器运行日志\ndocker exec -it <container id> /bin/bash 进入一个正在运行的镜像内\ndocker rm <container id> 删除某个未来运行状态的容器\ndocker rmi <image id> 删除某个镜像，只能删除未运行过的镜像\ndocker inspect <image id> 查看某个镜像的详细信息，包括层目录等等\n",
+      "data": {
+        "title": "docker常用命令",
+        "date": "2022-07-11 14:48:15",
+        "tags": [],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "docker-chang-yong-ming-ling"
+    },
+    {
+      "content": "#### mysql\n```sh\ndocker run -p 3306:3306 --name mysql \\\n-v /usr/local/docker/mysql/conf:/etc/mysql \\\n-v /usr/local/docker/mysql/logs:/var/log/mysql \\\n-v /usr/local/docker/mysql/data:/var/lib/mysql \\\n-e MYSQL_ROOT_PASSWORD=123456 \\\n-d mysql:5.7\n```\n\n#### phpmyadmin\n```sh\ndocker run --name phpmyadmin -d --link mysql -e PMA_HOST=\"mysql\" -p 6061:80 phpmyadmin/phpmyadmin\n```\n\n#### elasticsearch\n```sh\ndocker run -e  -d -p 9200:9200 -p 9300:9300 -v ${ES_SINGLE}/config/es-single.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v ${ES_SINGLE}/data:/usr/share/elasticsearch/data --name es-single elasticsearch:7.6.2\n```\n\n#### redis\n```sh\ndocker run --name redis -d -p 6380:6379 redis\n```\n\n#### prometheus\n```sh\ndocker run  -d   -p 10050:9090   -v /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml    prom/prometheus\n```\n\n#### grafana\n```sh\ndocker run -d   -p 10051:3000   --name=grafana   -e \"GF_SERVER_ROOT_URL=http://grafana.server.name\"   -e \"GF_SECURITY_ADMIN_PASSWORD=admin\"   grafana/grafana\n```\n\n#### kafka\n```sh\ndocker run -d --name kafka -p 15672:9092 -e KAFKA_BROKER_ID=0 -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:5672 --link zookeeper -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://47.93.185.66:15672 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:15672 -t wurstmeister/kafka\n```\n\n#### http文件服务\n```sh\ndocker run -it --rm -p 7000:8000 -v $PWD:/app/public --name gohttpserver -d bushinvren1986/mygohttpserver:v1 --upload --delete\n```",
+      "data": {
+        "title": "记录自己常用的容器镜像和启动命令",
+        "date": "2022-06-20 11:10:20",
+        "tags": [
+          "docker"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "ji-lu-zi-ji-chang-yong-de-rong-qi-jing-xiang-he-qi-dong-ming-ling"
+    },
+    {
+      "content": "虚拟内存：\nhttps://zhuanlan.zhihu.com/p/519028065",
+      "data": {
+        "title": "【操作系统】内存满了，会发生什么？",
+        "date": "2022-05-27 14:17:37",
+        "tags": [
+          "操作系统"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "cao-zuo-xi-tong-nei-cun-man-liao-hui-fa-sheng-shi-me"
+    },
+    {
+      "content": "记得之前dockerhub的自动构建功能是免费的，收费之后github的项目就不能再免费自动构建docker镜像并推送到dockerhub仓库了。\n现在可以使用github action持续集成服务自动构建发布镜像到dockerhub，这里记录一下怎么使用github action去做自动构建推送镜像。\n#### 配置github action的workflow\n首先项目目录中需要有编写好的dockerfile，然后给项目新建.github/workflows/build-docker-image.yml文件，\n```sh\n# build-docker-image.yml\nname: Publish Docker image   # workflow名称，可以在Github项目主页的【Actions】中看到所有的workflow\n\non:   # 配置触发workflow的事件\n  push:\n    branches:   # master分支有push时触发此workflow\n      - 'master'\n    tags:       # tag更新时触发此workflow\n      - '*'\n\njobs:  # workflow中的job\n\n  push_to_registry:  # job的名字\n    name: Push Docker image to Docker Hub\n    runs-on: ubuntu-latest   # job运行的基础环境\n\n    steps:  # 一个job由一个或多个step组成\n      - name: Check out the repo\n        uses: actions/checkout@v2   # 官方的action，获取代码\n\n      - name: Log in to Docker Hub\n        uses: docker/login-action@v1  # 三方的action操作， 执行docker login\n        with:\n          username: ${{ secrets.DOCKERHUB_USERNAME }}  # 配置dockerhub的认证，在Github项目主页 【Settings】 -> 【Secrets】 添加对应变量\n          password: ${{ secrets.DOCKERHUB_TOKEN }}\n\n      - name: Extract metadata (tags, labels) for Docker\n        id: meta\n        uses: docker/metadata-action@v3  # 抽取项目信息，主要是镜像的tag\n        with:\n          images: betaincao/test-nginx # dockerhub中对应的镜像目录\n\n      - name: Build and push Docker image\n        uses: docker/build-push-action@v2 # docker build & push\n        with:\n          context: .\n          push: true\n          tags: ${{ steps.meta.outputs.tags }}\n          labels: ${{ steps.meta.outputs.labels }}\n```\n配置中大部分都加上了注释，需要特别说明的是 steps 中的 uses 。 我们以第二个step Log in to Docker Hub 为例，正常情况下，我们应该是运行 run docker login ** 。 这里使用了一个 action docker/login-action，action 其实就是一系列step的组成，所以既然别人已经做好了，干嘛不直接用呢。所有可用的 action可以到 这里 查找。\n#### 推送使用\n配置妥当之后，提交代码推送至github。按照本例中的配置，只要master分支有push事件或者tag有更新，就会触发Github Action，然后自动构建镜像推送至DockerHub。\n可以在Github项目主页的【Actions】栏中查看每次执行详情。",
+      "data": {
+        "title": "使用github action完成项目的CI/CD",
+        "date": "2022-05-10 11:35:44",
+        "tags": [
+          "cicd"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "shi-yong-github-action-wan-cheng-xiang-mu-de-cicd"
+    },
+    {
+      "content": "git rebase",
+      "data": {
+        "title": "git rebase",
+        "date": "2022-05-10 11:35:28",
+        "tags": [],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "git-rebase"
+    },
+    {
+      "content": "直接上图：\n![](https://betaincao.github.io//post-images/1637043469549.png)\n解读：\n1、容器状态（上图中带颜色的圆圈）：Created，Running，Paused，Stopped，Deleted；\n2、Docker命令：docker run，docker create，docker stop，docker rm，docker pause，docker kill，docker unpause等；\n3、docker相关事件（上图中的矩形框）：create，start，die，stop，OOM等；\n4、重启策略判断条件：根据重启策略（restart policy）判断是否需要重启容器\n\n## 第一条路径：\n![](https://betaincao.github.io//post-images/1637043979518.png)\n如上图所示:\n1、我们先通过 docker run 命令，直接创建（ create ）并启动（ start ）一个容器，进入到运行状态（ Running ）\n2、然后程序运行结束（例如输出 Hello World 之后，或者通过 Ctrl + C 使得程序终止），容器死亡（ die ）\n3、由于我们没有设置重启策略，所以直接进入到停止状态（ Stopped ）\n4、最后通过 docker rm 命令销毁容器，进入到被删除状态（ Deleted ）\n\n## 第二条路径：\n![](https://betaincao.github.io//post-images/1637044084057.png)\n如上图所示：\n1、我们还是通过 docker run 命令，直接创建（ create ）并启动（ start ）一个容器，进入到运行状态（ Running ）\n2、然后通过 docker stop 命令杀死容器中的程序（ die ）并停止（ stop ）容器，最终进入到停止状态（ Stopped ）\n3、最后通过 docker rm 命令销毁容器，进入到被删除状态（ Deleted ）\n\n### tips:\ndocker stop与docker kill 区别：\nkill 命令向容器内运行的程序直接发出 SIGKILL 信号（或其他指定信号），而 stop 则是先发出 SIGTERM 再发出 SIGKILL 信号，属于优雅关闭（ Graceful Shutdown ）。推荐使用docker stop。",
+      "data": {
+        "title": "docker lifetime",
+        "date": "2021-11-16 14:15:52",
+        "tags": [
+          "docker"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": "/post-images/docker-lifetime.png",
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "docker-lifetime"
+    },
+    {
+      "content": "当我们需要监控某个资源的变化并做一些列的操作时，使用k8s提供的controller机制来实现，k8s官方提供了提个通用库client-go。\n![](https://betaincao.github.io//post-images/1636359463968.jpeg)\n如上图所示，图中包含了client-go与controller的整个交互过程。\n\n\n\n",
+      "data": {
+        "title": "编写自定义的kubernetes controller",
+        "date": "2021-11-08 16:09:16",
+        "tags": [
+          "kubernetes",
+          "golang"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": "/post-images/bian-xie-zi-ding-yi-de-kubernetes-controller.jpeg",
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "bian-xie-zi-ding-yi-de-kubernetes-controller"
+    },
+    {
+      "content": "今天是2021年10月24日，程序员的专属节日！",
+      "data": {
+        "title": "Hello，1024",
+        "date": "2021-10-24 19:53:27",
+        "tags": [],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "hello1024"
+    },
+    {
+      "content": "今天是在北京的最后一份工作的last day。\n\n![](https://betaincao.github.io//post-images/1631775637611.jpeg)\n\n799天的北漂生活算是告一段落。\n\n**再见了，北京！**",
+      "data": {
+        "title": "跟北京说个再见吧",
+        "date": "2021-09-16 14:53:28",
+        "tags": [
+          "随想"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": "/post-images/gen-bei-jing-shuo-ge-zai-jian-ba.jpeg",
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "gen-bei-jing-shuo-ge-zai-jian-ba"
+    },
+    {
+      "content": "## 个人情况\n毕业两年，北京在线教育创业公司，技术氛围不错。主要语言栈golang、python，主要技术方向是k8s、容器、云计算。有服务上云的实践经历，了解cicd基本流程，求知意向是容器研发、基础架构研发、运维研发之类的（主要还是研发方向）。\n\n## 面试周期\n2021.7.19 ~ 2021.8.30\n\n## 已面试公司\n快手、字节、小米、金山云、完美世界、京东云、百度、西安腾讯云、西安中兴通信、字节西安。\n快手二面卒，字节一面卒，小米二面卒，金山云感觉聊的挺好的一面卒，完美世界offer，京东云现场面offer，百度一面卒，西安腾讯云offer，西安中兴已拒，字节西安三面拒了（比较晚）。\n\n面试前期准备很重要！！！准备充分面试时感受会好很多。千万别裸面！！！\n\n## 简单说一下面试的基本问题吧（主要还是偏向基础）\n### 项目方向：\n项目的话我不多说什么，就是自己的项目细节自己肯定清楚，如果项目中不是自己做的部分，建议不要在简历上写太多，写清楚自己做了什么，容易被抠细节问，项目一般都会抠细节，特别细的那种！！！\n\n### 语言栈：\n因为我主要语言栈是go，所以一般都比较少问python。\n#### golang\n1、gin框架路由怎么实现的，具体正则怎么匹配？限流中间件怎么实现？\n2、go的slice与数组的区别，slice的实现原理，源码？\n3、golang的协程调度，gpm模型。协程调度过程中的锁。\n4、golang的channel实现，channel有缓存和无缓存，一般会直接撸码（三个goroutine顺序打印）。\n5、golang的关键字defer、recover、pannic之类的实现原理。\n6、sync包里面的锁、原子操作、waitgroup之类的。\n7、make和new的区别，引用类型和非引用类型，值传递之类的。\n#### python\n1、python多线程、多进程。\n2、python的装饰器怎么实现的？\n\n### 操作系统：\n1、进程、线程、协程间的区别以及他们间的切换之类的，有时候会问到语言级别的协程。\n2、io复用、用户态/内核态转换\n3、awk命令\n4、linux查看端口占用\n5、top命令，free命令中的各个参数表示什么，buff/cache都表示什么？\n\n### k8s & 容器：\n1、简单聊一下什么是云原生、什么是k8s、容器，容器与虚机相比优势。\n2、k8s组件，pod创建的过程，operator是什么？\n3、docker是怎么实现的，底层基石namespace和cgroup。\n4、k8s的workload类型，使用场景，statefulset你们是怎么用的？\n5、limit和request，探针，一般怎么排查pod问题，查看上次失败的pod日志。\n6、sidecar是什么，怎么实现的？\n7、pv，pvc，动态pv怎么实现\n8、k8s的声明式api怎么实现的，informar源码。\n9、cicd，发布模式。\n10、svc的负载均衡、服务发现，ipvs与iptables。\n以上基本是会被问的点（虽然有一些问题我也不是很熟），另外很多会被问k8s的网络之类的，因为我比较菜，这块被问的比较少。\n\n### 计算机网络：\n1、tcp三次握手四次挥手，为什么不能是两次握手，三次挥手？握手和挥手过程中的状态。\n2、time_wait作用，为什么是2msl，close_wait作用，time_wait过多怎么办？\n3、http请求的过程，浏览器输入网址请求过程？dns解析的详细过程？\n4、https与http的区别，https第一次服务端回传是否加密？\n5、tcp与udp区别，tcp怎么保证可靠性。\n6、http请求头、分隔符、长连接怎么实现\n\n### 数据库：\n1、mysql的事务，事务使用场景。\n2、mysql的索引，什么情况下索引失效，聚簇索引与非聚簇索引，索引的存储b+树与b-树区别。\n3、join的内外连接，最左匹配原则。\n4、redis的数据结构，hmap怎么实现的，持久化怎么做，go操作redis的方式。\n数据库方向有被问到，我基本没答上来（一般都告诉他只会基础，开发直接使用gorm）。\n\n### 数据结构与算法：\n1、倒排索引和B+树\n2、判断链表是否有环，时间复杂度要求0(1)\n3、LeetCode上合并区间的题\n4、leetcode的股票买卖的题\n5、二叉树的最近公共祖先\n6、有序数组合并\n7、什么是平衡二叉树、最小堆\n8、大文件的top10问题\n\n### 其他：\n1、git 的相关操作，合并commit，合并之类的。\n2、场景设计\n",
+      "data": {
+        "title": "写个社招的面经吧",
+        "date": "2021-09-09 16:16:34",
+        "tags": [
+          "面试"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "2021-09-09"
+    },
+    {
+      "content": "##  什么是容器？\n容器是一个**视图隔离**、**资源可限制**、**独立文件系统**的进程集合。\n###  视图隔离\n所谓“视图隔离”就是能够看到部分进程以及具有独立的主机名等；因为进程之间相互可见并且可以相互通信，使用Namespace技术来实现进程在资源上的视图隔离。\n### 资源可限制\n控制资源使用率是可以对于内存大小以及CPU使用个数等进行限制；通过Cgroup来限制资源使用率，设置能够使用的CPU和内存量。\n### 独立文件系统\n针对不同进程使用同一个文件系统所造成的问题而言，Linux 和 Unix 操作系统可以通过 chroot 系统调用将子目录变成根目录，达到视图级别的隔离；进程在 chroot 的帮助下可以具有独立的文件系统，对于这样的文件系统进行增删改查不会影响到其他进程。\n\n## 什么是镜像？\n运行容器所需要的所有文件集合——容器镜像\nDockerfile - 描述镜像构建步骤\n\n构建步骤所产生出文件系统的变化 - changeset\nchangeset的**分层**和**复用**\n### changeset的分层和复用优势\n1、提高分发效率\n2、下载镜像时只需要下载本地没有的数据即可\n3、节约系统资源\n\n## 容器运行时的生命周期\n### 单进程模型\n1、Init进程生命周期 = 容器生命周期\n2、运行期间可运行exec执行运维操作\n### 数据持久化\n1、独立于容器的生命周期\n2、数据卷 - docker volume vs bind\n\n## 容器项目架构\nmoby是目前最流行的容器管理引擎，moby daemon会对上提供关于容器、镜像、网络以及volume的管理。\n### moby 容器引擎架构\nmoby daemon锁依赖的最重要的组件是containerd，containerd 是一个容器运行时管理引擎，其独立于 moby daemon ，可以对上提供容器、镜像的相关管理。\ncontainerd 底层有 containerd shim 模块，其类似于一个守护进程。\n![](https://betaincao.github.io//post-images/1629874274977.jpg)\ncontainerd\n容器运行时\n\n## 容器 VS VM\n容器是",
+      "data": {
+        "title": "容器与镜像",
+        "date": "2021-08-25 14:12:08",
+        "tags": [
+          "docker"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "rong-qi-yu-jing-xiang"
+    },
+    {
+      "content": "go语言中最常见的、也是经常被人提及的设计模式--不要使用共享内存的方式通信，应该通过通信的方式共享内存。\n## channel的特性\n1、先入先出（FIFO）\n2、无锁管道\n\n## 关闭channel的方式\n1、context\n2、done channel\n\n## 有缓存&无缓存管道\n无缓存channel实际上可以看做是一种同步模式，有缓存的channel可以看做是异步模式。\n在同步模式下，发送方和接收方要同步就绪，只有两者都ready的情况下，数据才能在两者间传递（实际是内存拷贝）。\n在异步模式下，在缓冲区可用的情况下（有剩余容量），发送方和接收方都可以顺序运行。\n同步模式下，必须要发送方和接收方配对，操作才能成功，否则会被阻塞；异步模式下，缓冲槽要有剩余容量，操作才能成功，否则也会阻塞。\n\n注：函数间传递chan时，直接传递channel，不用传递channel的指针。\n\n## channel的底层实现原理\n我们先看一个简单地小demo：\n```sh\n\n package main\n\n func main() {\n     ch := make(chan struct{})\n     ch <- struct{}{}\n }\n```\n创建了一个无缓冲channel，然后往这个channel发送数据。因为程序中没有读操作ready，所以发送的时候会阻塞。\n",
+      "data": {
+        "title": "golang - channel",
+        "date": "2021-08-25 12:03:25",
+        "tags": [
+          "golang"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "golang-channel"
+    },
+    {
+      "content": "> 欢迎来到我的小站呀，很高兴遇见你！🤝\n\n## 🏠 关于本站\n✍️ 学习记录\n\n## 👨‍💻 博主是谁\nA coding boy.\n\n## ⛹ 兴趣爱好\ncoding,playing games.\n\n## 📬 联系我呀\n\n✉️ betaincao@gmail.com",
+      "data": {
+        "title": "关于",
+        "date": "2021-06-25 19:09:48",
+        "tags": [],
+        "published": true,
+        "hideInList": true,
+        "feature": null,
+        "isTop": false
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "about"
+    },
+    {
+      "content": "👏  Welcome to **BetainCao**！\n⭕️ Talk is cheap, show me the **code**！\n✍️  **学习记录** 每天都学习一点，探究事物的本质，方可成为大牛... \n\n😘 Enjoy~\n",
+      "data": {
+        "title": "Hello World",
+        "date": "2020-07-06 00:00:00",
+        "tags": [
+          "hello-world"
+        ],
+        "published": true,
+        "hideInList": false,
+        "feature": null,
+        "isTop": true
+      },
+      "isEmpty": false,
+      "excerpt": "",
+      "abstract": "",
+      "fileName": "hello-world"
+    }
+  ],
+  "tags": [
+    {
+      "name": "操作系统",
+      "slug": "qS5pdMHaT",
+      "used": true
+    },
+    {
+      "name": "cicd",
+      "slug": "R-OGo86G-",
+      "used": true
+    },
+    {
+      "name": "随想",
+      "slug": "8wT4OQIBC",
+      "used": true
+    },
+    {
+      "index": -1,
+      "name": "kubernetes",
+      "slug": "kubernetes",
+      "used": true
+    },
+    {
+      "index": -1,
+      "name": "面试",
+      "slug": "interview",
+      "used": true
+    },
+    {
+      "index": -1,
+      "name": "docker",
+      "slug": "docker",
+      "used": true
+    },
+    {
+      "index": -1,
+      "name": "hello-world",
+      "slug": "hello-world",
+      "used": true
+    },
+    {
+      "index": -1,
+      "name": "golang",
+      "slug": "golang",
+      "used": true
+    },
+    {
+      "name": "Gridea",
+      "slug": "cBBDmEkU6",
+      "used": false
+    }
+  ],
+  "menus": [
+    {
+      "link": "/",
+      "name": "首页",
+      "openType": "Internal"
+    },
+    {
+      "link": "/archives/",
+      "name": "归档",
+      "openType": "Internal"
+    },
+    {
+      "link": "/tags/",
+      "name": "标签",
+      "openType": "Internal"
+    },
+    {
+      "link": "/post/about/",
+      "name": "关于",
+      "openType": "Internal"
+    }
+  ]
+}

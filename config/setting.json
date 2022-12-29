@@ -1,0 +1,27 @@
+{
+  "config": {
+    "branch": "main",
+    "domain": "https://betaincao.github.io/",
+    "email": "betaincao@gmail.com",
+    "platform": "github",
+    "privateKey": "",
+    "repository": "betaincao.github.io",
+    "token": "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",
+    "username": "betaincao"
+  },
+  "comment": {
+    "commentPlatform": "gitalk",
+    "disqusSetting": {
+      "api": "",
+      "apikey": "",
+      "shortname": ""
+    },
+    "gitalkSetting": {
+      "clientId": "",
+      "clientSecret": "",
+      "owner": "",
+      "repository": ""
+    },
+    "showComment": false
+  }
+}
